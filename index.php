@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php unset($_SESSION['message']); ?>
     <?php endif; ?>
 </script>
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -55,10 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
                     <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.php">About</a></li>
                     <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-link text-white fw-bold" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            Tambah Postingan
-                        </button>
+
                 </ul>
             </div>
         </div>
@@ -71,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="site-heading">
                         <h1>Welcome to My Blog</h1>
                         <span class="subheading">A Blog About Nothing</span>
-                        
+
                     </div>
                 </div>
             </div>
@@ -109,52 +107,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-    <!-- Main Content-->
-    <div class="container-fluid px-4 px-lg-5">
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-
-            <div class="col-md-10 col-lg-8 col-xl-7">
-                <!-- Post preview-->
-                <div class="post-preview">
-                    <h2 class="text-primary">list Artikel</h2>
-                    <?php
-                    $posts = getAllPosts();
-                    $counter = 0;
-                    foreach ($posts as $post) {
-                        if ($counter % 2 == 0) {
-                            echo '<div class="row">';
-                        }
-                        echo '<div class="col-md-6 col-lg-12">
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <h5 class="card-title">' . $post->title . '</h5>
-                    <p class="card-text">' . substr($post->content, 0, 150) . '...</p>
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                      <a href="edit.php?id=' . $post->_id . '" class="btn btn-outline-dark btn-sm">Edit</a>
-                      <a href="delete.php?id=' . $post->_id . '" class="btn btn-outline-danger btn-sm">Delete</a>
-                      <a href="view.php?id=' . $post->_id . '" class="btn btn-outline-link btn-sm text-primary pb-2" style="text-decoration: underline;">Baca Selengkapnya</a>
-                    </div>
-                  </div>
-                  <img src="' . $post->image . '" class="card-img-bottom" alt="Gambar Artikel">
+<!-- Main Content-->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Post preview-->
+            <div class="post-preview">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="text-primary">Artikel Terbaru</h2>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Tambah Postingan
+                    </button>
                 </div>
-              </div>';
-
-                        if ($counter % 2 != 0 || $counter == count($posts) - 1) {
-                            echo '</div>';
-                        }
-                        $counter++;
+                <?php
+                $posts = getAllPosts();
+                $posts = array_reverse($posts); // Mengurutkan array secara terbalik
+                $counter = 0;
+                foreach ($posts as $post) {
+                    echo '
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">' . $post->title . '</h5>
+                            <p class="card-text">' . substr($post->content, 0, 150) . '...</p>
+                            <a href="edit.php?id=' . $post->_id . '" class="btn btn-outline-dark btn-sm">Edit</a>
+                            <a href="delete.php?id=' . $post->_id . '" class="btn btn-outline-danger btn-sm">Delete</a>
+                            <a href="view.php?id=' . $post->_id . '" class="btn btn-outline-link btn-sm text-primary pb-2" style="text-decoration: underline;">Baca Selengkapnya</a>
+                        </div>
+                        <img src="' . $post->image . '" class="card-img-bottom" alt="Gambar Artikel">
+                    </div>';
+                    $counter++;
+                    if ($counter >= 1) {
+                        echo '<div class="row"></div>';
                     }
-                    ?>
-                    <!-- Divider-->
-                    <hr class="my-4" />
-                    <!-- Pager-->
-                    <div class="d-flex justify-content-end mb-4"><a class="btn btn-primary text-uppercase" href="#!">Older Posts →</a></div>
+                }
+                
+                if ($counter == 1) {
+                    echo '</div>';
+                }
+                ?>
+            </div>
+        </div>
+        <!-- Side widgets-->
+        <div class="col-lg-4">
+                <!-- Search widget-->
+                <div class="card mb-4">
+                    <div class="card-header">Search</div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input class="form-control" type="text" placeholder="Enter search term..." aria-label="Enter search term..." aria-describedby="button-search" />
+                            <button class="btn btn-primary" id="button-search" type="button">Go!</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Categories widget-->
+                <div class="card mb-4">
+                    <div class="card-header">Categories</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li><a href="#!">a</a></li>
+                                    <li><a href="#!">b</a></li>
+                                    <li><a href="#!">c</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li><a href="#!">d</a></li>
+                                    <li><a href="#!">e</a></li>
+                                    <li><a href="#!">f</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Side widget-->
+                <!-- Recent Posts widget -->
+                <div class="card mb-4">
+                    <div class="card-header">Recent Posts</div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li><a href="#!">Post 1</a></li>
+                            <li><a href="#!">Post 2</a></li>
+                            <li><a href="#!">Post 3</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Footer-->
-    <footer class="border-top">
+        <!-- Footer-->
+        <footer class="border-top">
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
@@ -188,11 +231,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
             </div>
+    </div>
+</div>
+                    <!-- Pagination-->
+                    <nav aria-label="Pagination">
+                        <hr class="my-0" />
+                        <ul class="pagination justify-content-center my-4">
+                            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a></li>
+                            <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#!">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#!">3</a></li>
+                            <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
+                            <li class="page-item"><a class="page-link" href="#!">15</a></li>
+                            <li class="page-item"><a class="page-link" href="#!">Older</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            
         </footer>
-    <!-- Bootstrap core JS-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Core theme JS-->
-    <script src="js/scripts.js"></script>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
 </body>
 
 </html>
