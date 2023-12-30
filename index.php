@@ -53,9 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto py-4 py-lg-0">
-                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.php">Home</a></li>
                     <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.php">About</a></li>
-                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.php">Contact</a></li>
 
                 </ul>
             </div>
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="mb-3">
                             <label for="content" class="control label">content</label>
-                            <textarea name="content" id="" cols="30" rows="30" id="content" class="form-control"></textarea>
+                            <textarea name="content" id="" cols="30" rows="10" id="content" class="form-control" required></textarea>
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -107,51 +107,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-<!-- Main Content-->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8">
-            <!-- Post preview-->
-            <div class="post-preview">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="text-primary">Artikel Terbaru</h2>
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        Tambah Postingan
-                    </button>
-                </div>
-                <?php
-                $posts = getAllPosts();
-                $posts = array_reverse($posts); // Mengurutkan array secara terbalik
-                $counter = 0;
-                foreach ($posts as $post) {
-                    echo '
-                    <div class="card mb-4">
+    <!-- Main Content-->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Post preview-->
+                <div class="post-preview">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="text-primary">Artikel Terbaru</h2>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Tambah Postingan
+                        </button>
+                    </div>
+                    <?php
+                    $posts = getAllPosts();
+                    $posts = array_reverse($posts); // Mengurutkan array secara terbalik
+                    $counter = 0;
+                    foreach ($posts as $post) {
+                        echo '
+                    <div class="card mb-4 rounded">
                         <div class="card-body">
                             <h5 class="card-title">' . $post->title . '</h5>
                             <p class="card-text">' . substr($post->content, 0, 150) . '...</p>
-                            <a href="edit.php?id=' . $post->_id . '" class="btn btn-outline-dark btn-sm">Edit</a>
-                            <a href="delete.php?id=' . $post->_id . '" class="btn btn-outline-danger btn-sm">Delete</a>
-                            <a href="view.php?id=' . $post->_id . '" class="btn btn-outline-link btn-sm text-primary pb-2" style="text-decoration: underline;">Baca Selengkapnya</a>
+                            <a href="view.php?id=' . $post->_id . '" class="btn btn-outline-link btn-sm text-primary pb-2 float-end" style="text-decoration: underline;">Baca Selengkapnya</a>
+                            <a href="edit.php?id=' . $post->_id . '" class="btn btn-info btn-sm rounded float-end">Edit</a>
+                        <a href="delete.php?id=' . $post->_id . '" class="btn btn-danger btn-sm rounded float-end">Delete</a>  
                         </div>
-                        <img src="' . $post->image . '" class="card-img-bottom" alt="Gambar Artikel">
+                        <img src="' . $post->image . '" class="img-fluid rounded" alt="Gambar Artikel">
+                          
                     </div>';
-                    $counter++;
-                    if ($counter >= 1) {
-                        echo '<div class="row"></div>';
+                        $counter++;
+                        if ($counter >= 1) {
+                            echo '<div class="row"></div>';
+                        }
                     }
-                }
-                
-                if ($counter == 1) {
-                    echo '</div>';
-                }
-                ?>
+
+                    if ($counter == 1) {
+                        echo '</div>';
+                    }
+
+                    ?>
+                </div>
             </div>
-        </div>
-        <!-- Side widgets-->
-        <div class="col-lg-4">
+            <!-- Side widgets-->
+            <div class="col-lg-4 rounded">
                 <!-- Search widget-->
-                <div class="card mb-4">
+                <div class="card mb-4 rounded">
                     <div class="card-header">Search</div>
                     <div class="card-body">
                         <div class="input-group">
@@ -161,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
                 <!-- Categories widget-->
-                <div class="card mb-4">
+                <div class="card mb-4 rounded">
                     <div class="card-header">Categories</div>
                     <div class="card-body">
                         <div class="row">
@@ -184,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <!-- Side widget-->
                 <!-- Recent Posts widget -->
-                <div class="card mb-4">
+                <div class="card mb-4 rounded">
                     <div class="card-header">Recent Posts</div>
                     <div class="card-body">
                         <ul class="list-unstyled mb-0">
@@ -196,64 +198,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
         </div>
-        <!-- Footer-->
-        <footer class="border-top">
-            <div class="container px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-md-10 col-lg-8 col-xl-7">
-                        <ul class="list-inline text-center">
-                            <li class="list-inline-item">
-                                <a href="https://www.instagram.com/asska_chameleon/?igsh=ZGNjOWZkYTE3MQ%3D%3D&utm_source=qr">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
-                                        <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a href="https://www.facebook.com/asska2?mibextid=LQQJ4d">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
-                                        <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
-                                    </span>
-                                </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a href="https://github.com/asska88">
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-circle fa-stack-2x"></i>
-                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
-                                    </span>
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="small text-center text-muted fst-italic">Copyright &copy; Azka Website 2023</div>
-                    </div>
-                </div>
-            </div>
+        <!-- Pagination-->
+        <nav aria-label="Pagination">
+            <hr class="my-0" />
+            <ul class="pagination justify-content-center my-4">
+                <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a></li>
+                <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
+                <li class="page-item"><a class="page-link" href="#!">2</a></li>
+                <li class="page-item"><a class="page-link" href="#!">3</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
+                <li class="page-item"><a class="page-link" href="#!">15</a></li>
+                <li class="page-item"><a class="page-link" href="#!">Older</a></li>
+            </ul>
+        </nav>
     </div>
-</div>
-                    <!-- Pagination-->
-                    <nav aria-label="Pagination">
-                        <hr class="my-0" />
-                        <ul class="pagination justify-content-center my-4">
-                            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a></li>
-                            <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#!">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#!">3</a></li>
-                            <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
-                            <li class="page-item"><a class="page-link" href="#!">15</a></li>
-                            <li class="page-item"><a class="page-link" href="#!">Older</a></li>
-                        </ul>
-                    </nav>
+    </div>
+    <!-- Footer-->
+    <footer class="border-top">
+        <div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <ul class="list-inline text-center">
+                        <li class="list-inline-item">
+                            <a href="https://www.instagram.com/asska_chameleon/?igsh=ZGNjOWZkYTE3MQ%3D%3D&utm_source=qr">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fas fa-circle fa-stack-2x"></i>
+                                    <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://www.facebook.com/asska2?mibextid=LQQJ4d">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fas fa-circle fa-stack-2x"></i>
+                                    <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://github.com/asska88">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fas fa-circle fa-stack-2x"></i>
+                                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="small text-center text-muted fst-italic">Copyright &copy; Azka Website 2023</div>
                 </div>
             </div>
-            
-        </footer>
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
+        </div>
+        </div>
+        </div>
+    </footer>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="js/scripts.js"></script>
+    
 </body>
 
 </html>

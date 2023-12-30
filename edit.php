@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: view.php?id=' . $id);
         exit();
     } else {
-        // Jika update gagal, tampilkan pesan error
-        $errorMessage = 'Gagal mengupdate artikel.';
+        header('Location: view.php?id=' . $id);
+        exit();
     }
 } else {
     // Mengambil ID artikel dari parameter URL
@@ -29,10 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 }
+
 ?>
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -48,11 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="css/styles.css" rel="stylesheet" />
     <style>
-        body{
-            background-color:#F5F5F5;
+        body {
+            background-color: #F5F5F5;
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
@@ -88,14 +91,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
                 <label for="content" class="form-label">Konten</label>
-                <textarea class="form-control" id="content" name="content"rows="10"><?php echo $post['content']; ?></textarea>
+                <textarea class="form-control" id="content" name="content" rows="10"><?php echo $post['content']; ?></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
     <script src="js/scripts.js"></script>
 </body>
+
 </html>

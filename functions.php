@@ -101,4 +101,34 @@ function deletePost($id)
     $filter = ['_id' => new ObjectId($id)];
     $postsCollection->deleteOne($filter);
 }
+function addComment($name, $email, $message)
+{
+    $database = getDatabaseConnection();
+    $commentsCollection = $database->selectCollection("comment");
+
+    $commentId = new ObjectId();
+
+    $comment = [
+        '_id' => $commentId,
+        'name' => $name,
+        'email' => $email,
+        'message' => $message
+    ];
+
+    $commentsCollection->insertOne($comment);
+
+}
+function getComments() 
+{
+    $database = getDatabaseConnection();
+    $commentCollection = $database->selectCollection("comment");
+
+    $comments = $commentCollection->find();
+    $result = [];
+    foreach ($comments as $comment) {
+            $result[] = $comment;
+    }
+
+    return $result;
+}
 ?>

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Clean Blog - Start Bootstrap Theme</title>
+    <title>Azka Blog</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
     <!-- Font Awesome icons (free version)-->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -20,21 +20,21 @@
 <body>
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
-            <div class="container px-4 px-lg-5">
-                <a class="navbar-brand" href="index.html">Start Bootstrap</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                    Menu
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.php">Home</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.php">About</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.php">Contact</a></li>
-                    </ul>
-                </div>
+        <div class="container px-4 px-lg-5">
+            <a class="navbar-brand" href="index.html">Azka Blog</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                Menu
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.php">About</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.php">Contact</a></li>
+                </ul>
             </div>
-        </nav>
+        </div>
+    </nav>
     <!-- navbar end -->
     <!-- Page Header-->
     <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
@@ -51,33 +51,108 @@
     </header>
     <!-- page header end -->
     <?php
+    require_once 'vendor/autoload.php';
     require_once 'functions.php';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $message = $_POST['message'];
+        addComment($name, $email, $message);
+        echo '<div class="alert alert-success">Komentar berhasil ditambahkan!</div>';
+        header('Location: view.php');
+        exit;
+    }
+
     if (isset($_GET['id'])) {
         $id = $_GET['id'];
         $post = getPostById($id);
-        // if ($counter % 2 == 0) {
-        //     echo '<div class="row">';
-        // }
+
         echo '<div class="col-md-6 col-lg-12">
         <!-- Post Content-->
         <article class="mb-4">
-            <div class="container px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-md-10 col-lg-8 col-xl-7">
+            <div class="container fluid">
+                <div class="row justify-content-center">
+                    <div class="col-md-12 col-lg-10 col-xl-7">
                         <h2 class="section-heading">' . $post->title . '</h2>';
-        $imageUrl = getImageUrl($post['_id']);
-        if ($imageUrl) {
-            echo '<img class="img-fluid" src="' . $imageUrl . '" alt="Post Image">';
+
+        // Cek apakah konten artikel berupa daftar
+        $content = $post['content'];
+        $isList = false;
+        if (preg_match('/<ul>|<ol>/', $content)) {
+            $isList = true;
+            $content = str_replace('<ul>', '<ol>', $content); // Mengganti <ul> dengan <ol> agar daftar tampil sebagai daftar angka
+            $content = str_replace('</ul>', '</ol>', $content); // Mengganti </ul> dengan </ol> agar daftar tampil sebagai daftar angka
         }
-        echo '<p>' . $post['content'] . '</p>
-                    <a href="index.php">Kembali ke Daftar Postingan</a>
+
+        if ($isList) {
+            echo $content;
+        } else {
+            $imageUrl = getImageUrl($post['_id']);
+            if ($imageUrl) {
+                echo '<div class="text-center"><img class="img-fluid" src="' . $imageUrl . '" alt="Post Image"></div>';
+            }
+            echo '<p>' . $content . '</p>';
+        }
+
+        echo '<a href="index.php" class="btn btn-primary rounded btn-sm float-end">Kembali ke Daftar Postingan</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </article>
-</div>';
+        </article>
+    </div>';
     }
     ?>
+    <!-- Tampilkan Komentar -->
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <h2 class="section-heading">Komentar</h2>
+                <?php
+                require_once 'vendor/autoload.php';
+                require_once 'functions.php';
+                $comments = getComments(); // Mengambil semua komentar dari database
+
+                if ($comments) {
+                    foreach ($comments as $comment) {
+                        echo '<div class="card mb-4">';
+                        echo '<div class="card-header"><strong>Nama : </strong>'. $comment['name'] . '</div>';
+                        echo '<div class="card-header"><strong>Email : </strong>' . $comment['email'] . '</div>';
+                        echo '<div class="card-body">';
+                        echo '<p class="card-text">' . $comment['message'] . '</p>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo '<p>Belum ada komentar.</p>';
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- Form Komentar -->
+    <div class="container px-4 px-lg-5 ">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <h2 class="section-heading ">Tinggalkan Komentar</h2>
+                <form action="" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="name" class="form-label ">Nama</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Komentar</label>
+                        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-2">Kirim Komentar</button>
+                </form>
+            </div>
+        </div>
     </div>
     <!-- Footer-->
     <footer class="border-top">

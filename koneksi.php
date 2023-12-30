@@ -13,4 +13,7 @@ $postsCollection = $database->selectCollection("posts");
 
 // Menggunakan collection "images"
 $imagesCollection = $database->selectCollection("images");
+
+// menggunakan collection Komentar
+$commentCollection = $database->selectCollection('comment')
 ?>
