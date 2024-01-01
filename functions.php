@@ -131,4 +131,54 @@ function getComments()
 
     return $result;
 }
+function getCommentById($commentId) {
+    $database = getDatabaseConnection();
+    $commentCollection = $database->selectCollection("comment");
+
+    $query = ['_id' => new MongoDB\BSON\ObjectID($commentId)];
+    $comment = $commentCollection->findOne($query);
+    return $comment;
+}
+function addReplyToComment($commentId, $replyName, $replyEmail, $replyMessage)
+{
+    $commentId = $commentId;
+    $replyName = $replyName;
+    $replyEmail = $replyEmail;
+    $replyMessage = $replyMessage;
+    $database = getDatabaseConnection();
+    $repliesCollection = $database->selectCollection("replies");
+
+    $reply = [
+        'comment_id' => $commentId,
+        'reply_name' => $replyName,
+        'reply_email' => $replyEmail,
+        'reply_message' => $replyMessage
+    ];
+
+    $repliesCollection->insertOne($reply);
+}
+
+function getRepliesByCommentId($commentId) {
+    $database = getDatabaseConnection();
+    $repliesCollection = $database->selectCollection("replies");
+
+    $query = ['comment_id' => $commentId];
+    $replies = $repliesCollection->find($query);
+
+    return $replies;
+}
+
+function getRepliesComment()
+{
+    $database = getDatabaseConnection();
+    $repliesCollection = $database->selectCollection("replies");
+
+    $replies = $repliesCollection->find();
+    $result = [];
+    foreach ($replies as $reply) {
+        $result[] = $reply;
+    }
+
+    return $result;
+}
 ?>
