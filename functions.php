@@ -4,6 +4,13 @@ require_once 'koneksi.php';
 use MongoDB\Client;
 use MongoDB\BSON\ObjectId;
 
+function makeTextBoldFromAsterisks($text) {
+    $pattern = '/\*(.*?)\*/'; // Pola pencarian tanda * di antara teks
+    $replacement = '<strong>$1</strong>'; // Pengganti untuk menerapkan format tebal
+    $text = preg_replace($pattern, $replacement, $text);
+    return $text;
+}
+
 // Fungsi untuk menginisialisasi koneksi ke database
 function getDatabaseConnection()
 {
@@ -103,6 +110,11 @@ function deletePost($id)
 }
 function addComment($postId,$name, $email, $message)
 {
+    $postId = $postId;
+    $name = $name;
+    $email = $email;
+    $message = $message;
+
     $database = getDatabaseConnection();
     $commentsCollection = $database->selectCollection("comment");
 

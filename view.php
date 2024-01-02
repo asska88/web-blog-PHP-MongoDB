@@ -54,33 +54,34 @@
     </header>
     <!-- page header end -->
     <?php
+    session_start();
     require_once 'vendor/autoload.php';
     require_once 'functions.php';
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['name'], $_POST['email'], $_POST['message'])) {
-            $name = $_POST['name'];
-            $email = $_POST['email'];
-            $message = $_POST['message'];
-            addComment($posId, $name, $email, $message);
-            echo '<div class="alert alert-success">Komentar berhasil ditambahkan!</div>';
-            header('Location: view.php');
-            exit;
-        } elseif (isset($_POST['reply_name'], $_POST['reply_email'], $_POST['reply_message'], $_POST['comment_id'])) {
-            $replyName = $_POST['reply_name'];
-            $replyEmail = $_POST['reply_email'];
-            $replyMessage = $_POST['reply_message'];
-            $commentId = $_POST['comment_id'];
 
-            addReplyToComment($commentId, $replyName, $replyEmail, $replyMessage);
-            echo '<div class="alert alert-success">balasan Komentar berhasil ditambahkan!</div>';
-            header('Location: view.php');
-        }
-    }
 
     if (isset($_GET['id'])) {
         $id = $_GET['id'];
         $post = getPostById($id);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['name'], $_POST['email'], $_POST['message'], $_POST['postId'])) {
+                $name = $_POST['name'];
+                $email = $_POST['email'];
+                $message = $_POST['message'];
+                $postId = $_POST['postId'];
+                addComment($posId, $name, $email, $message);
+                header('Location: view.php');
+                exit;
+            } elseif (isset($_POST['reply_name'], $_POST['reply_email'], $_POST['reply_message'], $_POST['comment_id'])) {
+                $replyName = $_POST['reply_name'];
+                $replyEmail = $_POST['reply_email'];
+                $replyMessage = $_POST['reply_message'];
+                $commentId = $_POST['comment_id'];
+                addReplyToComment($commentId, $replyName, $replyEmail, $replyMessage);
+                header('Location: view.php');
+            }
+        }
 
         echo '<div class="col-md-6 col-lg-12">
         <!-- Post Content-->
@@ -91,7 +92,7 @@
                         <h2 class="section-heading">' . $post->title . '</h2>';
 
         // Cek apakah konten artikel berupa daftar
-        $content = $post['content'];
+        $content = nl2br($post['content']);
         $isList = false;
         if (preg_match('/<ul>|<ol>/', $content)) {
             $isList = true;
@@ -106,14 +107,38 @@
             if ($imageUrl) {
                 echo '<div class="text-center"><img class="img-fluid" src="' . $imageUrl . '" alt="Post Image"></div>';
             }
+            $content = makeTextBoldFromAsterisks($content);
             echo '<p>' . $content . '</p>';
         }
-
         echo '<a href="index.php" class="btn btn-primary rounded btn-sm float-end">Kembali ke Daftar Postingan</a>
                     </div>
                 </div>
             </div>
         </article>
+    </div>
+    <!-- Form Komentar -->
+    <div class="container px-4 px-lg-5 ">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <h2 class="section-heading ">Tinggalkan Komentar</h2>
+                <form action="" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="postId" value="' . $post->_id . '">
+                    <div class="mb-3">
+                        <label for="name" class="form-label ">Nama</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Komentar</label>
+                        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary rounded-2">Kirim Komentar</button>
+                </form>
+            </div>
+        </div>
     </div>';
     }
     ?>
@@ -125,20 +150,23 @@
                 <?php
                 require_once 'vendor/autoload.php';
                 require_once 'functions.php';
+
                 $comments = getComments();
 
                 // $commentId = $_GET['comment_id'];
 
                 // $repliesByCommentId = getRepliesByCommentId($commentId);
-                
+
                 $replies = getRepliesComment();
-                
+
                 if ($comments || $replies) {
+
                     foreach ($comments as $comment) {
                         echo '<div class="card mb-4">';
                         echo '<div class="card-header"><strong>Nama : </strong>' . $comment['name'] . '</div>';
                         echo '<div class="card-body">';
                         echo '<p class="card-text">' . $comment['message'] . '</p>';
+
                         if (!empty($replies)) {
                             echo '<div class="replies">';
                             echo '<h5 class="card-title">Balasan:</h5>';
@@ -192,6 +220,7 @@
                         echo '</div>';
                         echo '</div>';
                     }
+                    echo '<a href="index.php" class="btn btn-primary rounded btn-sm float-end">Kembali ke Daftar Postingan</a>';
                 } else {
                     echo '<p>Belum ada komentar.</p>';
                 }
@@ -215,30 +244,6 @@
             });
         });
     </script>
-    <!-- Form Komentar -->
-    <div class="container px-4 px-lg-5 ">
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-            <div class="col-md-10 col-lg-8 col-xl-7">
-                <h2 class="section-heading ">Tinggalkan Komentar</h2>
-                <form action="" method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="name" class="form-label ">Nama</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label">Komentar</label>
-                        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary rounded-2">Kirim Komentar</button>
-                    <a href="index.php" class="btn btn-primary rounded btn-sm float-end">Kembali ke Daftar Postingan</a>
-                </form>
-            </div>
-        </div>
-    </div>
     <!-- Footer-->
     <footer class="border-top">
         <div class="container px-4 px-lg-5">
