@@ -101,7 +101,7 @@ function deletePost($id)
     $filter = ['_id' => new ObjectId($id)];
     $postsCollection->deleteOne($filter);
 }
-function addComment($name, $email, $message)
+function addComment($postId,$name, $email, $message)
 {
     $database = getDatabaseConnection();
     $commentsCollection = $database->selectCollection("comment");
@@ -110,6 +110,7 @@ function addComment($name, $email, $message)
 
     $comment = [
         '_id' => $commentId,
+        'postId' => $postId,
         'name' => $name,
         'email' => $email,
         'message' => $message
@@ -162,8 +163,8 @@ function getRepliesByCommentId($commentId) {
     $database = getDatabaseConnection();
     $repliesCollection = $database->selectCollection("replies");
 
-    $query = ['comment_id' => $commentId];
-    $replies = $repliesCollection->find($query);
+    $query = ['_id' => new ObjectId($commentId)];
+    $replies = $repliesCollection->findOne($query);
 
     return $replies;
 }
@@ -176,6 +177,7 @@ function getRepliesComment()
     $replies = $repliesCollection->find();
     $result = [];
     foreach ($replies as $reply) {
+        if($reply)
         $result[] = $reply;
     }
 

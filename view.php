@@ -58,26 +58,24 @@
     require_once 'functions.php';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if(isset($_POST['name'], $_POST['email'], $_POST['message'])){
-        $name = $_POST['name'];
-        $email = $_POST['email'];
-        $message = $_POST['message'];
-        addComment($name, $email, $message);
-        echo '<div class="alert alert-success">Komentar berhasil ditambahkan!</div>';
-        header('Location: view.php');
-        exit;
-        }elseif (isset($_POST['reply_name'], $_POST['reply_email'], $_POST['reply_message'], $_POST['comment_id'])) {
-        $replyName = $_POST['reply_name'];
-        $replyEmail = $_POST['reply_email'];
-        $replyMessage = $_POST['reply_message'];
-        $commentId = $_POST['comment_id'];
+        if (isset($_POST['name'], $_POST['email'], $_POST['message'])) {
+            $name = $_POST['name'];
+            $email = $_POST['email'];
+            $message = $_POST['message'];
+            addComment($posId, $name, $email, $message);
+            echo '<div class="alert alert-success">Komentar berhasil ditambahkan!</div>';
+            header('Location: view.php');
+            exit;
+        } elseif (isset($_POST['reply_name'], $_POST['reply_email'], $_POST['reply_message'], $_POST['comment_id'])) {
+            $replyName = $_POST['reply_name'];
+            $replyEmail = $_POST['reply_email'];
+            $replyMessage = $_POST['reply_message'];
+            $commentId = $_POST['comment_id'];
 
-        // Simpan reply ke koleksi "replies"
-        addReplyToComment($commentId, $replyName, $replyEmail, $replyMessage);
-        echo '<div class="alert alert-success">balasan Komentar berhasil ditambahkan!</div>';
-        header('Location: view.php');
+            addReplyToComment($commentId, $replyName, $replyEmail, $replyMessage);
+            echo '<div class="alert alert-success">balasan Komentar berhasil ditambahkan!</div>';
+            header('Location: view.php');
         }
-        
     }
 
     if (isset($_GET['id'])) {
@@ -128,8 +126,13 @@
                 require_once 'vendor/autoload.php';
                 require_once 'functions.php';
                 $comments = getComments();
-                $replies = getRepliesComment();
 
+                // $commentId = $_GET['comment_id'];
+
+                // $repliesByCommentId = getRepliesByCommentId($commentId);
+                
+                $replies = getRepliesComment();
+                
                 if ($comments || $replies) {
                     foreach ($comments as $comment) {
                         echo '<div class="card mb-4">';
@@ -141,26 +144,27 @@
                             echo '<h5 class="card-title">Balasan:</h5>';
 
                             foreach ($replies as $reply) {
-                                echo '<div class="card mb-2">';
-                                echo '<div class="card-header"><strong>Nama : </strong>' . $reply['reply_name'] . '</div>';
-                                echo '<div class="card-body">';
-                                echo '<p class="card-text">' . $reply['reply_message'] . '</p>';
-                                echo '</div>';
-                                echo '</div>';
+                                // echo '<div class="card">';
+                                // echo '<div class="card-body">';
+                                // echo '<p class="card-text">Comment ID: ' . $reply['comment_id'] . '</p>';
+                                // echo '</div>';
+                                // echo '</div>';
+                                if ($reply['comment_id'] == $comment['_id']) {
+                                    echo '<div class="card mb-2">';
+                                    echo '<div class="card-header"><strong>Nama : </strong>' . $reply['reply_name'] . '</div>';
+                                    echo '<div class="card-body">';
+                                    echo '<p class="card-text">' . $reply['reply_message'] . '</p>';
+                                    echo '</div>';
+                                    echo '</div>';
+                                }
                             }
 
                             echo '</div>';
                         }
-                        
-                        
-
-                        // Tampilkan balasan jika ada
-
-
-                        // Tampilkan tombol "Balas"
+                        // tombol "Balas"
                         echo '<button class="btn btn-link btn-sm reply-btn float-end">Balas</button>';
 
-                        // Tampilkan formulir balasan
+                        // form balas
                         echo '<div class="card-body reply-form" style="display: none;">';
                         echo '<h5 class="card-title">Kirim Balasan</h5>';
                         echo '<form action="" method="POST">';
@@ -230,6 +234,7 @@
                         <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary rounded-2">Kirim Komentar</button>
+                    <a href="index.php" class="btn btn-primary rounded btn-sm float-end">Kembali ke Daftar Postingan</a>
                 </form>
             </div>
         </div>
